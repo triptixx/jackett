@@ -9,7 +9,7 @@ ARG DOTNET_TAG
 
 ### install jackett
 WORKDIR /jackett-src
-RUN apk add --no-cache git jq binutils; \
+RUN apk add --no-cache git jq binutils file; \
     COMMITID=$(wget -q -O- https://ci.appveyor.com/api/projects/Jackett/jackett/build/${JACKETT_VER} \
         | jq -r '.build.commitId'); \
     git clone https://github.com/Jackett/Jackett.git .; \
