@@ -1,0 +1,30 @@
+name: docker build
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  jackett:
+    runs-on: ubuntu-latest
+    steps:
+      - name: clone
+        uses: actions/checkout@master
+      - name: build
+        uses: triptixx/action-docker-build@master
+        with:
+          repo: jackett-dev
+      - name: test
+        uses: triptixx/action-docker-test@master
+        with:
+          verbose: true
+          repo: jackett-dev
+          curl: :9117
+      - name: publish
+        uses: triptixx/action-docker-publish@master
+        with:
+          docker_username: ${{ secrets.docker_username }}
+          docker_password: ${{ secrets.docker_password }}
+          from: jackett-dev
+          repo: ${{ secrets.docker_username }}/jackett
+          tags: latest,%label org.label-schema.version | %auto
