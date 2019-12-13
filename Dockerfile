@@ -36,7 +36,7 @@ LABEL org.label-schema.name="jackett" \
 
 COPY --from=builder /output/ /
 
-#RUN apk add --no-cache 
+RUN apk add --no-cache libstdc++ libgcc
 
 VOLUME ["/config"]
 
