@@ -1,8 +1,3 @@
-# jackett
-A docker image for the torznab proxy Jackett
-
-En cours de dev
-
 [hub]: https://hub.docker.com/r/loxoo/jackett
 [mbdg]: https://microbadger.com/images/loxoo/jackett
 [git]: https://github.com/triptixx/jackett
