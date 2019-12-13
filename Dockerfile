@@ -16,5 +16,34 @@ RUN apk add --no-cache git jq binutils; \
     git checkout $COMMITID; \
     echo '{"configProperties":{"System.Globalization.Invariant":true}}' > src/Jackett.Server/runtimeconfig.template.json; \
     dotnet publish /p:TrimUnusedDependencies=true -c Release -f netcoreapp${DOTNET_TAG} -r linux-musl-x64 \
-        -o /output src/Jackett.Server; \
-    find /output -exec sh -c 'file "{}" | grep -q ELF && strip --strip-debug "{}"' \;
+        -o /output/jackett src/Jackett.Server; \
+    find /output/jackett -exec sh -c 'file "{}" | grep -q ELF && strip --strip-debug "{}"' \;
+
+COPY *.sh /output/usr/local/bin/
+RUN chmod +x /output/usr/local/bin/*.sh /output/jackett/jackett
+
+#=============================================================
+
+FROM loxoo/alpine:${ALPINE_TAG}
+
+ARG JACKETT_VER
+ENV SUID=921 SGID=921
+
+LABEL org.label-schema.name="jackett" \
+      org.label-schema.description="A docker image for the torznab proxy Jackett" \
+      org.label-schema.url="https://github.com/Jackett/Jackett" \
+      org.label-schema.version=${JACKETT_VER}
+
+COPY --from=builder /output/ /
+
+#RUN apk add --no-cache 
+
+VOLUME ["/config"]
+
+EXPOSE 9117/TCP
+
+HEALTHCHECK --start-period=10s --timeout=5s \
+    CMD wget -qO /dev/null "http://localhost:9117/torznab/all"
+
+ENTRYPOINT ["/sbin/tini", "--", "/usr/local/bin/entrypoint.sh"]
+CMD ["/jackett/jackett", "-d", "/config", "--NoUpdates"]
