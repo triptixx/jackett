@@ -15,7 +15,7 @@ RUN apk add --no-cache git jq binutils file; \
     git clone https://github.com/Jackett/Jackett.git .; \
     git checkout $COMMITID; \
     echo '{"configProperties":{"System.Globalization.Invariant":true}}' > src/Jackett.Server/runtimeconfig.template.json; \
-    dotnet publish /p:TrimUnusedDependencies=true -c Release -f netcoreapp${DOTNET_TAG} -r linux-musl-x64 \
+    dotnet publish -p:Version=${JACKETT_VER} -p:TrimUnusedDependencies=true -c Release -f netcoreapp${DOTNET_TAG} -r linux-musl-x64 \
         -o /output/jackett src/Jackett.Server; \
     find /output/jackett -exec sh -c 'file "{}" | grep -q ELF && strip --strip-debug "{}"' \;
 
@@ -36,7 +36,7 @@ LABEL org.label-schema.name="jackett" \
 
 COPY --from=builder /output/ /
 
-RUN apk add --no-cache libstdc++ libgcc
+RUN apk add --no-cache libstdc++ libgcc libintl
 
 VOLUME ["/config"]
 
@@ -46,4 +46,4 @@ HEALTHCHECK --start-period=10s --timeout=5s \
     CMD wget -qO /dev/null "http://localhost:9117/torznab/all"
 
 ENTRYPOINT ["/sbin/tini", "--", "/usr/local/bin/entrypoint.sh"]
-CMD ["/jackett/jackett", "-d", "/config", "--NoUpdates"]
+CMD ["/jackett/jackett", "-x", "-d", "/config", "--NoUpdates"]
