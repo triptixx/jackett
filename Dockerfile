@@ -20,7 +20,8 @@ RUN apk add --no-cache git jq binutils file; \
     find /output/jackett -exec sh -c 'file "{}" | grep -q ELF && strip --strip-debug "{}"' \;
 
 COPY *.sh /output/usr/local/bin/
-RUN chmod +x /output/usr/local/bin/*.sh /output/jackett/jackett
+RUN chmod -R u=rwX,go=rX /output/jackett; \
+    chmod +x /output/usr/local/bin/*.sh /output/jackett/jackett
 
 #=============================================================
 
