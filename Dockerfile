@@ -14,8 +14,7 @@ RUN apk add --no-cache git jq binutils file; \
         | jq -r '.build.commitId'); \
     git clone https://github.com/Jackett/Jackett.git .; \
     git checkout $COMMITID; \
-    echo '{"configProperties":{"System.Globalization.Invariant":true}}' > src/Jackett.Server/runtimeconfig.template.json; \
-    dotnet publish -p:Version=${JACKETT_VER} -p:TrimUnusedDependencies=true -c Release -f netcoreapp${DOTNET_TAG} \
+    dotnet publish -p:Version=${JACKETT_VER} -p:PublishTrimmed=true -c Release -f netcoreapp${DOTNET_TAG} \
         -r linux-musl-x64 -o /output/jackett src/Jackett.Server; \
     find /output/jackett -exec sh -c 'file "{}" | grep -q ELF && strip --strip-debug "{}"' \;
 
@@ -37,7 +36,7 @@ LABEL org.label-schema.name="jackett" \
 
 COPY --from=builder /output/ /
 
-RUN apk add --no-cache libstdc++ libgcc libintl
+RUN apk add --no-cache libstdc++ libgcc libintl icu-libs
 
 VOLUME ["/config"]
 
