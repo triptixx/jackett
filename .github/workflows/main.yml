@@ -20,6 +20,7 @@ jobs:
           verbose: true
           repo: jackett-dev
           curl: :9117
+          curl_opts: -c /dev/null
       - name: publish
         uses: triptixx/action-docker-publish@master
         with:
