@@ -1,6 +1,6 @@
 ARG ALPINE_TAG=3.11
 ARG DOTNET_TAG=3.1
-ARG JACKETT_VER=0.12.1645
+ARG JACKETT_VER=0.12.1765
 
 FROM mcr.microsoft.com/dotnet/core/sdk:${DOTNET_TAG}-alpine AS builder
 
