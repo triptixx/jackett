@@ -9,11 +9,8 @@ ARG DOTNET_TAG
 
 ### install jackett
 WORKDIR /jackett-src
-RUN apk add --no-cache git jq binutils file; \
-    COMMITID=$(wget -q -O- https://ci.appveyor.com/api/projects/Jackett/jackett/build/${JACKETT_VER} \
-        | jq -r '.build.commitId'); \
-    git clone https://github.com/Jackett/Jackett.git .; \
-    git checkout $COMMITID; \
+RUN apk add --no-cache git binutils file; \
+    git clone https://github.com/Jackett/Jackett.git --branch v${JACKETT_VER} --depth 1 .; \
     dotnet publish -p:Version=${JACKETT_VER} -p:PublishTrimmed=true -c Release -f netcoreapp${DOTNET_TAG} \
         -r linux-musl-x64 -o /output/jackett src/Jackett.Server; \
     find /output/jackett -exec sh -c 'file "{}" | grep -q ELF && strip --strip-debug "{}"' \;
