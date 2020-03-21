@@ -1,6 +1,10 @@
 ARG ALPINE_TAG=3.11
 ARG DOTNET_TAG=3.1
+<<<<<<< HEAD
 ARG JACKETT_VER=0.14.164
+=======
+ARG JACKETT_VER=0.13.222
+>>>>>>> b6d9530512440150b3c27197e71c0d10a55676d5
 
 FROM mcr.microsoft.com/dotnet/core/sdk:${DOTNET_TAG}-alpine AS builder
 
@@ -9,11 +13,8 @@ ARG DOTNET_TAG
 
 ### install jackett
 WORKDIR /jackett-src
-RUN apk add --no-cache git jq binutils file; \
-    COMMITID=$(wget -q -O- https://ci.appveyor.com/api/projects/Jackett/jackett/build/${JACKETT_VER} \
-        | jq -r '.build.commitId'); \
-    git clone https://github.com/Jackett/Jackett.git .; \
-    git checkout $COMMITID; \
+RUN apk add --no-cache git binutils file; \
+    git clone https://github.com/Jackett/Jackett.git --branch v${JACKETT_VER} --depth 1 .; \
     dotnet publish -p:Version=${JACKETT_VER} -p:PublishTrimmed=true -c Release -f netcoreapp${DOTNET_TAG} \
         -r linux-musl-x64 -o /output/jackett src/Jackett.Server; \
     find /output/jackett -exec sh -c 'file "{}" | grep -q ELF && strip --strip-debug "{}"' \;
