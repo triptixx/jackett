@@ -11,7 +11,7 @@ ARG DOTNET_TAG
 WORKDIR /jackett-src
 RUN apk add --no-cache git binutils file; \
     git clone https://github.com/Jackett/Jackett.git --branch v${JACKETT_VER} --depth 1 .; \
-    dotnet publish -p:Version=${JACKETT_VER} -p:PublishTrimmed=true -c Release -f netcoreapp${DOTNET_TAG} \
+    dotnet publish -p:Version=${JACKETT_VER} -p:PublishTrimmed=true -c Release -f net${DOTNET_TAG} \
         -r linux-musl-x64 -o /output/jackett src/Jackett.Server; \
     find /output/jackett -exec sh -c 'file "{}" | grep -q ELF && strip --strip-debug "{}"' \;
 
